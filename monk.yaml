@@ -1,0 +1,68 @@
+namespace: pinokiod
+
+backend-server:
+  defines: runnable
+  metadata:
+    name: backend-server
+    description: >-
+      Main backend service using Express.js to handle HTTP requests and socket
+      communication.
+    icon: https://emojiapi.dev/api/v1/globe_with_meridians.svg
+  containers:
+    backend-server:
+      image: env-4661.registry.local/backend-server:main-mvqghm
+      build: .
+      dockerfile: Dockerfile.backend-server
+  services:
+    http-server-port:
+      description: Port for handling HTTP requests
+      container: backend-server
+      port: 80
+      host-port: 80
+      publish: true
+      protocol: tcp
+  connections:
+    kernel-connection:
+      target: pinokiod/core-api
+      service: '!!!SETME!!!'
+      optional: true
+      description: >-
+        Connection to the core API service for managing modules and processing
+        tasks.
+  variables:
+    name:
+      env: NAME
+      type: string
+      value: World
+      description: >-
+        Default environment variable set in Dockerfile to configure the
+        application.
+
+core-api:
+  defines: runnable
+  metadata:
+    name: core-api
+    description: >-
+      Core API service responsible for processing various tasks and managing
+      modules.
+    icon: https://emojiapi.dev/api/v1/link.svg
+  containers:
+    core-api:
+      image: env-4661.registry.local/core-api:main-nqy400
+      build: .
+      dockerfile: Dockerfile.core-api
+  services: {}
+  connections: {}
+  variables: {}
+
+stack:
+  defines: group
+  members:
+    - pinokiod/backend-server
+    - pinokiod/core-api
+  metadata:
+    name: pinokiod
+    description: >-
+      Pinokiod is a Node.js application with a main backend service and a core
+      API service.
+    icon: https://emojiapi.dev/api/v1/package.svg
