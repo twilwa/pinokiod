@@ -1,0 +1,50 @@
+namespace: pinokiod
+
+worker-script:
+  defines: runnable
+  metadata:
+    name: worker-script
+    description: Worker script for file system operations and inter-process communication.
+    icon: https://emojiapi.dev/api/v1/hammer_and_wrench.svg
+  containers:
+    worker-script:
+      image: env-4671.registry.local/worker-script:main-i57avp
+      build: .
+      dockerfile: Dockerfile.worker-script
+  services: {}
+  connections: {}
+  variables: {}
+
+script-service:
+  defines: runnable
+  metadata:
+    name: script-service
+    description: Script service that may start a server or perform tasks.
+    icon: https://emojiapi.dev/api/v1/scroll.svg
+  containers:
+    script-service:
+      image: env-4671.registry.local/script-service:main-hyx95i9
+      build: .
+      dockerfile: Dockerfile.script-service
+  services:
+    script-service-port:
+      description: Port exposed by the script-service for server or task operations
+      container: script-service
+      port: 42000
+      host-port: 42000
+      publish: true
+      protocol: tcp
+  connections: {}
+  variables: {}
+
+stack:
+  defines: group
+  members:
+    - pinokiod/worker-script
+    - pinokiod/script-service
+  metadata:
+    name: pinokiod
+    description: >-
+      A Node.js application with a main backend service, a worker script, and
+      potentially a script service.
+    icon: https://emojiapi.dev/api/v1/package.svg
