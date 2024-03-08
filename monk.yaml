@@ -1,0 +1,39 @@
+namespace: pinokiod
+
+pinokiod-server:
+  defines: runnable
+  metadata:
+    name: pinokiod-server
+    description: Main HTTP server handling web requests and serving static files.
+    icon: https://emojiapi.dev/api/v1/globe_with_meridians.svg
+  containers:
+    pinokiod-server:
+      image: env-4671.registry.local/pinokiod-server:main-c8j0oc
+      build: .
+      dockerfile: Dockerfile.pinokiod-server
+  services:
+    http-server-port:
+      description: HTTP server port
+      container: pinokiod-server
+      port: 42000
+      host-port: 42000
+      publish: true
+      protocol: tcp
+  connections:
+    websocket-connection:
+      target: pinokiod/client
+      service: '!!!SETME!!!'
+      optional: true
+      description: WebSocket connection for real-time communication with clients
+  variables: {}
+
+stack:
+  defines: group
+  members:
+    - pinokiod/pinokiod-server
+  metadata:
+    name: pinokiod
+    description: >-
+      Node.js application that sets up an HTTP server using Express.js to handle
+      HTTP requests and manage server configurations.
+    icon: https://emojiapi.dev/api/v1/package.svg
